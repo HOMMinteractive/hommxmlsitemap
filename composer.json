@@ -1,0 +1,55 @@
+{
+    "name": "homm/hommsitemap",
+    "description": "Craft 3 plugin that provides an easy way to provide and manage a XML sitemap for search engines like Google and Bing",
+    "type": "craft-plugin",
+    "version": "1.0.9",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "sitemap",
+        "seo",
+        "sitemap.xml",
+        "webmaster tools"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dolphiq",
+            "email": "info@dolphiq.nl",
+            "homepage": "https://dolphiq.nl/"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC11",
+        "jaybizzle/crawler-detect": "1.*"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+          "homm\\hommsitemap\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "XML Sitemap Homm",
+        "handle": "sitemap",
+        "schemaVersion": "1.0.2",
+        "developer": "Dolphiq",
+        "developerUrl": "https://dolphiq.nl/",
+        "hasCpSettings": true,
+        "hasCpSection": false,
+        "components": {
+            "sitemapService": "homm\\hommsitemap\\services\\SitemapService"
+        },
+        "documentationUrl": "https://github.com/Dolphiq/craft3-plugin-sitemap/blob/master/README.md",
+        "changelogUrl": "https://github.com/Dolphiq/craft3-plugin-sitemap/blob/master/CHANGELOG.md",
+
+        "class": "homm\\hommsitemap\\Sitemap"
+    }
+}
