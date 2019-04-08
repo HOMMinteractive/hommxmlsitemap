@@ -16,9 +16,9 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Dolphiq",
-            "email": "info@dolphiq.nl",
-            "homepage": "https://dolphiq.nl/"
+            "name": "Homm",
+            "email": "mail@homm.ch",
+            "homepage": "https://homm.ch/"
         }
     ],
     "require": {
@@ -40,15 +40,13 @@
         "name": "XML Sitemap Homm",
         "handle": "sitemap",
         "schemaVersion": "1.0.1",
-        "developer": "Dolphiq",
-        "developerUrl": "https://dolphiq.nl/",
+        "developer": "Homm",
+        "developerUrl": "https://homm.ch/",
         "hasCpSettings": true,
         "hasCpSection": false,
         "components": {
             "sitemapService": "homm\\hommsitemap\\services\\SitemapService"
-        },
-        "documentationUrl": "https://github.com/Dolphiq/craft3-plugin-sitemap/blob/master/README.md",
-        "changelogUrl": "https://github.com/Dolphiq/craft3-plugin-sitemap/blob/master/CHANGELOG.md",
+        }
 
         "class": "homm\\hommsitemap\\Sitemap"
     }
