@@ -46,7 +46,7 @@
         "hasCpSection": false,
         "components": {
             "sitemapService": "homm\\hommsitemap\\services\\SitemapService"
-        }
+        },
 
         "class": "homm\\hommsitemap\\Sitemap"
     }
