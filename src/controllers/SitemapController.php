@@ -4,7 +4,7 @@
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/Dolphiq/craft3-plugin-sitemap
+ * @link      https://github.com/HOMMinteractive/hommsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
@@ -47,8 +47,7 @@ class SitemapController extends Controller
     private $_sourceRouteParams = [];
     protected $allowAnonymous = ['index'];
     // Public Methods
-// =========================================================================
-
+    // =========================================================================
 
     /**
      * @inheritdoc
@@ -71,7 +70,6 @@ class SitemapController extends Controller
      */
     public function actionIndex()
     {
-
         try {
             // try to register the searchengine visit
             $CrawlerDetect = new CrawlerDetect;
@@ -84,7 +82,6 @@ class SitemapController extends Controller
                 $visit->save();
             }
         } catch (\Exception $err) {
-
         }
         Craft::$app->response->format = \yii\web\Response::FORMAT_RAW;
         $headers = Craft::$app->response->headers;
@@ -102,38 +99,40 @@ class SitemapController extends Controller
         $dom->appendChild($urlset);
 
         foreach ($this->_createEntrySectionQuery()->all() as $item) {
-
             $entries = \craft\elements\Entry::find()
                 ->id($item['elementId'])
                 ->one();
 
-
             if ($entries) {
                 $entry = $entries->getAttributes(['seoIndexierung']);
+                $weiterleitung = $entries->getAttributes(['navigationAlsWeiterleitung']);
+
                 if ($entry['seoIndexierung']) {
-                    $loc = $this->getUrl($item['uri'], $item['siteId']);
-                    if ($loc === null) continue;
+                    if ($weiterleitung['navigationAlsWeiterleitung'] == '') {
+                        $loc = $this->getUrl($item['uri'], $item['siteId']);
+                        if ($loc === null) continue;
 
-                    $url = $dom->createElement('url');
-                    $urlset->appendChild($url);
+                        $url = $dom->createElement('url');
+                        $urlset->appendChild($url);
 
-                    $url->appendChild($dom->createElement('loc', $loc));
-                    $url->appendChild($dom->createElement('priority', $item['priority']));
-                    $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
-                    $dateUpdated = strtotime($item['dateUpdated']);
-                    $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
-                    if ($item['alternateLinkCount'] > 1) {
-                        $alternateLinks = $this->_createAlternateSectionQuery($item['elementId'])->all();
-                        if (count($alternateLinks) > 0) {
-                            foreach ($alternateLinks as $alternateItem) {
-                                $alternateLoc = $this->getUrl($alternateItem['uri'], $alternateItem['siteId']);
-                                if ($alternateLoc === null) continue;
+                        $url->appendChild($dom->createElement('loc', $loc));
+                        $url->appendChild($dom->createElement('priority', $item['priority']));
+                        $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
+                        $dateUpdated = strtotime($item['dateUpdated']);
+                        $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
+                        if ($item['alternateLinkCount'] > 1) {
+                            $alternateLinks = $this->_createAlternateSectionQuery($item['elementId'])->all();
+                            if (count($alternateLinks) > 0) {
+                                foreach ($alternateLinks as $alternateItem) {
+                                    $alternateLoc = $this->getUrl($alternateItem['uri'], $alternateItem['siteId']);
+                                    if ($alternateLoc === null) continue;
 
-                                $alternateLink = $dom->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
-                                $alternateLink->setAttribute('rel', 'alternate');
-                                $alternateLink->setAttribute('hreflang', strtolower($alternateItem['siteLanguate']));
-                                $alternateLink->setAttribute('href', $alternateLoc);
-                                $url->appendChild($alternateLink);
+                                    $alternateLink = $dom->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
+                                    $alternateLink->setAttribute('rel', 'alternate');
+                                    $alternateLink->setAttribute('hreflang', strtolower($alternateItem['siteLanguate']));
+                                    $alternateLink->setAttribute('href', $alternateLoc);
+                                    $url->appendChild($alternateLink);
+                                }
                             }
                         }
                     }
@@ -152,15 +151,12 @@ class SitemapController extends Controller
             $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
             $dateUpdated = strtotime($item['dateUpdated']);
             $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
-
-
         }
         return $dom->saveXML();
     }
 
     private function _createEntrySectionQuery(): Query
     {
-
         $subQuery = (new Query())
             ->select('COUNT(DISTINCT other_elements_sites.id)')
             ->from('{{%elements_sites}} other_elements_sites')
@@ -175,7 +171,6 @@ class SitemapController extends Controller
                 'sites.language siteLanguage',
                 'elements.id elementId',
                 'alternateLinkCount' => $subQuery,
-
 
             ])
             ->from(['{{%sections}} sections'])

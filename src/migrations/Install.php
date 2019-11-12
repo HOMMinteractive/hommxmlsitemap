@@ -4,7 +4,7 @@
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/Dolphiq/craft3-plugin-sitemap
+ * @link      https://github.com/HOMMinteractive/hommsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
