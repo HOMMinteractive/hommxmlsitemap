@@ -38,7 +38,7 @@
     },
     "extra": {
         "name": "XML Sitemap Homm",
-        "handle": "hommsitemap",
+        "handle": "sitemap",
         "schemaVersion": "100.1.5",
         "developer": "Homm",
         "developerUrl": "https://homm.ch/",
