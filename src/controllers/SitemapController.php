@@ -105,10 +105,8 @@ class SitemapController extends Controller
 
             if ($entries) {
                 $entry = $entries->getAttributes(['seoIndexierung']);
-                $weiterleitung = $entries->getAttributes(['navigationAlsWeiterleitung']);
 
                 if ($entry['seoIndexierung']) {
-                    if ($weiterleitung['navigationAlsWeiterleitung'] == '') {
                         $loc = $this->getUrl($item['uri'], $item['siteId']);
                         if ($loc === null) continue;
 
@@ -135,7 +133,7 @@ class SitemapController extends Controller
                                 }
                             }
                         }
-                    }
+                    
                 }
             }
         }
