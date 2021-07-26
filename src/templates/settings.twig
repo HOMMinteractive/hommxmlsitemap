@@ -27,7 +27,7 @@
 {% set title = "Sitemap settings" %}
 
 {# The URL to this plugin's base CP section #}
-{% set pluginCpUrl = url('sitemap') %}
+{% set pluginCpUrl = url('hommsitemap') %}
 
 {# Get a URL to an image in our AssetBundle #}
 {% set iconUrl = view.getAssetManager().getPublishedUrl('@homm/hommsitemap/assetbundles/indexcpsection/dist', true) ~ '/img/Index-icon.svg' %}
@@ -35,7 +35,7 @@
 
 {# The content of the CP Section#}
 {% block content %}
-    <input type="hidden" name="action" value="sitemap/settings/save-sitemap">
+    <input type="hidden" name="action" value="hommsitemap/settings/save-sitemap">
 
     {{ redirectInput('settings/sitemap') }}
 
@@ -69,7 +69,7 @@
 
     {{ forms.editableTableField({
         label: "Enable structures"|t('app'),
-        instructions: "Choose which entry sections should be listed in the sitemap, and configure the crawl settings. <b>Note: the sections should have url's to get listed here </b>"|t('app'),
+        instructions: "Choose which entry sections should be listed in the sitemap, and configure the crawl settings. **Note: the sections should have URLs to get listed here.**"|t('app'),
         id: 'sitemapSections',
         name: 'sitemapSections',
         cols: {
@@ -169,7 +169,7 @@ Please note that the priority you assign to a page is not likely to influence th
 
     {{ forms.editableTableField({
         label: "Enable categories"|t('app'),
-        instructions: "Choose which categories should be listed in the sitemap, and configure the crawl settings. <b>Note: the categories should have url's to get listed here </b>"|t('app'),
+        instructions: "Choose which categories should be listed in the sitemap, and configure the crawl settings. **Note: the categories should have URLs to get listed here.**"|t('app'),
         id: 'sitemapCategories',
         name: 'sitemapCategories',
         cols: {

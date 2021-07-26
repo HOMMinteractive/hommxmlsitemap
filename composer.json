@@ -1,8 +1,8 @@
 {
     "name": "homm/hommsitemap",
-    "description": "Craft 3 plugin that provides an easy way to provide and manage a XML sitemap for search engines like Google and Bing",
+    "description": "Craft CMS Plugin to provide and manage XML Sitemap",
     "type": "craft-plugin",
-    "version": "100.1.6",
+    "version": "101.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -16,13 +16,17 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Homm",
-            "email": "mail@homm.ch",
-            "homepage": "https://homm.ch/"
+            "name": "Benjamin Ammann",
+            "homepage": "https://github.com/ammannbe"
+        },
+        {
+            "name": "Dolphiq",
+            "email": "info@dolphiq.nl",
+            "homepage": "https://dolphiq.nl/"
         }
     ],
     "require": {
-        "craftcms/cms": "^3.0.0-RC11",
+        "craftcms/cms": "^3.2.0",
         "jaybizzle/crawler-detect": "1.*"
     },
     "repositories": [
@@ -37,17 +41,18 @@
         }
     },
     "extra": {
-        "name": "XML Sitemap Homm",
-        "handle": "sitemap",
-        "schemaVersion": "100.1.6",
-        "developer": "Homm",
-        "developerUrl": "https://homm.ch/",
+        "name": "HOMMSitemap",
+        "handle": "hommsitemap",
+        "schemaVersion": "1.0.2",
+        "developer": "HOMM interactive",
+        "developerUrl": "https://github.com/HOMMinteractive",
+        "documentationUrl": "https://github.com/HOMMinteractive/hommsitemap/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/HOMMinteractive/hommsitemap/master/CHANGELOG.md",
         "hasCpSettings": true,
         "hasCpSection": false,
         "components": {
             "sitemapService": "homm\\hommsitemap\\services\\SitemapService"
         },
-
         "class": "homm\\hommsitemap\\Sitemap"
     }
 }

@@ -21,5 +21,5 @@
  * @since     1.0.0
  */
 return [
-    'sitemap plugin loaded' => 'sitemap plugin loaded',
+    '{name} plugin loaded' => '{name} plugin loaded',
 ];

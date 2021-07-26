@@ -10,17 +10,16 @@
 
 namespace homm\hommsitemap\controllers;
 
-use homm\hommsitemap\models\SitemapEntryModel;
-use homm\hommsitemap\records\SitemapEntry;
-use homm\hommsitemap\records\SitemapCrawlerVisit;
-use homm\hommsitemap\Sitemap;
-
 use Craft;
 use craft\db\Query;
-use craft\web\Controller;
 use craft\helpers\UrlHelper;
-
+use craft\web\Controller;
+use homm\hommsitemap\models\SitemapEntryModel;
+use homm\hommsitemap\records\SitemapCrawlerVisit;
+use DOMDocument;
+use Exception;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
+use yii\web\Response;
 
 /**
  * Default Controller
@@ -44,23 +43,11 @@ use Jaybizzle\CrawlerDetect\CrawlerDetect;
  */
 class SitemapController extends Controller
 {
-    private $_sourceRouteParams = [];
     protected $allowAnonymous = ['index'];
+    private $_sourceRouteParams = [];
+
     // Public Methods
     // =========================================================================
-
-    /**
-     * @inheritdoc
-     */
-    private function getUrl($uri, $siteId)
-    {
-        if ($uri !== null) {
-            $path = ($uri === '__home__') ? '' : $uri;
-            return UrlHelper::siteUrl($path, null, null, $siteId);
-        }
-
-        return null;
-    }
 
     /**
      * Handle a request going to our plugin's index action URL,
@@ -70,6 +57,7 @@ class SitemapController extends Controller
      */
     public function actionIndex()
     {
+
         try {
             // try to register the searchengine visit
             $CrawlerDetect = new CrawlerDetect;
@@ -81,13 +69,14 @@ class SitemapController extends Controller
                 $visit->name = $CrawlerDetect->getMatches();
                 $visit->save();
             }
-        } catch (\Exception $err) {
+        } catch (Exception $err) {
+
         }
-        Craft::$app->response->format = \yii\web\Response::FORMAT_RAW;
+        Craft::$app->response->format = Response::FORMAT_RAW;
         $headers = Craft::$app->response->headers;
         $headers->add('Content-Type', 'text/xml');
 
-        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->formatOutput = true;
 
         $urlset = $dom->createElementNS('http://www.sitemaps.org/schemas/sitemap/0.9', 'urlset');
@@ -103,44 +92,53 @@ class SitemapController extends Controller
                 ->id($item['elementId'])
                 ->one();
 
-            if ($entries) {
-                $entry = $entries->getAttributes(['seoIndexierung']);
+            if (!$entries) {
+                continue;
+            }
 
-                if ($entry['seoIndexierung']) {
-                        $loc = $this->getUrl($item['uri'], $item['siteId']);
-                        if ($loc === null) continue;
+            // NOTE: "seoIndexierung" is just for backwards compatibility
+            $attributes = $entries->getAttributes(['seoIndexierung', 'seoIndexing']);
 
-                        $url = $dom->createElement('url');
-                        $urlset->appendChild($url);
+            if (!$attributes['seoIndexierung'] && !$attributes['seoIndexing']) {
+                continue;
+            }
 
-                        $url->appendChild($dom->createElement('loc', $loc));
-                        $url->appendChild($dom->createElement('priority', $item['priority']));
-                        $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
-                        $dateUpdated = strtotime($item['dateUpdated']);
-                        $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
-                        if ($item['alternateLinkCount'] > 1) {
-                            $alternateLinks = $this->_createAlternateSectionQuery($item['elementId'])->all();
-                            if (count($alternateLinks) > 0) {
-                                foreach ($alternateLinks as $alternateItem) {
-                                    $alternateLoc = $this->getUrl($alternateItem['uri'], $alternateItem['siteId']);
-                                    if ($alternateLoc === null) continue;
+            $loc = $this->getUrl($item['uri'], $item['siteId']);
+            if ($loc === null) {
+                continue;
+            }
 
-                                    $alternateLink = $dom->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
-                                    $alternateLink->setAttribute('rel', 'alternate');
-                                    $alternateLink->setAttribute('hreflang', strtolower($alternateItem['siteLanguate']));
-                                    $alternateLink->setAttribute('href', $alternateLoc);
-                                    $url->appendChild($alternateLink);
-                                }
-                            }
+            $url = $dom->createElement('url');
+            $urlset->appendChild($url);
+            $url->appendChild($dom->createElement('loc', $loc));
+            $url->appendChild($dom->createElement('priority', $item['priority']));
+            $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
+            $dateUpdated = strtotime($item['dateUpdated']);
+            $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
+            if ($item['alternateLinkCount'] > 1) {
+                $alternateLinks = $this->_createAlternateSectionQuery($item['elementId'])->all();
+                if (count($alternateLinks) > 0) {
+                    foreach ($alternateLinks as $alternateItem) {
+                        $alternateLoc = $this->getUrl($alternateItem['uri'], $alternateItem['siteId']);
+                        if ($alternateLoc === null) {
+                            continue;
                         }
-                    
+
+                        $alternateLink = $dom->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
+                        $alternateLink->setAttribute('rel', 'alternate');
+                        $alternateLink->setAttribute('hreflang', strtolower($alternateItem['siteLanguate']));
+                        $alternateLink->setAttribute('href', $alternateLoc);
+                        $url->appendChild($alternateLink);
+                    }
                 }
             }
         }
 
         foreach ($this->_createEntryCategoryQuery()->all() as $item) {
             $loc = $this->getUrl($item['uri'], $item['siteId']);
-            if ($loc === null) continue;
+            if ($loc === null) {
+                continue;
+            }
 
             $url = $dom->createElement('url');
             $urlset->appendChild($url);
@@ -155,6 +153,7 @@ class SitemapController extends Controller
 
     private function _createEntrySectionQuery(): Query
     {
+        $currentDate =  date("Y-m-d H:i:s");
         $subQuery = (new Query())
             ->select('COUNT(DISTINCT other_elements_sites.id)')
             ->from('{{%elements_sites}} other_elements_sites')
@@ -169,17 +168,39 @@ class SitemapController extends Controller
                 'sites.language siteLanguage',
                 'elements.id elementId',
                 'alternateLinkCount' => $subQuery,
-
             ])
             ->from(['{{%sections}} sections'])
-            ->innerJoin('{{%homm_sitemap_entries}} sitemap_entries', '[[sections.id]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "section"')
+            ->innerJoin('{{%homm_sitemap_entries}} sitemap_entries',
+                '[[sections.id]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "section"')
             ->leftJoin('{{%structures}} structures', '[[structures.id]] = [[sections.structureId]]')
-            ->innerJoin('{{%sections_sites}} sections_sites', '[[sections_sites.sectionId]] = [[sections.id]] AND [[sections_sites.hasUrls]] = 1')
+            ->innerJoin('{{%sections_sites}} sections_sites',
+                '[[sections_sites.sectionId]] = [[sections.id]] AND [[sections_sites.hasUrls]] = 1')
             ->innerJoin('{{%entries}} entries', '[[sections.id]] = [[entries.sectionId]]')
+            ->andWhere(['<=', 'entries.postDate', $currentDate])
+            ->andWhere(['or', 'entries.expiryDate > :currentDate', 'entries.expiryDate is null'], [':currentDate' => $currentDate])
             ->innerJoin('{{%elements}} elements', '[[entries.id]] = [[elements.id]] AND [[elements.enabled]] = 1')
-            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]] AND [[elements_sites.enabled]] = 1')
+            ->innerJoin('{{%elements_sites}} elements_sites',
+                '[[elements_sites.elementId]] = [[elements.id]] AND [[elements_sites.enabled]] = 1')
             ->innerJoin('{{%sites}} sites', '[[elements_sites.siteId]] = [[sites.id]]')
+            ->andWhere(['elements.dateDeleted' => null])
+            ->andWhere(['sites.dateDeleted' => null])
+            ->andWhere(['elements.archived' => false])
+            ->andWhere(['elements.draftId' => null])
+            ->andWhere(['elements.revisionId' => null])
             ->groupBy(['elements_sites.id']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    private function getUrl($uri, $siteId)
+    {
+        if ($uri !== null) {
+            $path = ($uri === '__home__') ? '' : $uri;
+            return UrlHelper::siteUrl($path, null, null, $siteId);
+        }
+
+        return null;
     }
 
     private function _createAlternateSectionQuery($elementId): Query
@@ -192,9 +213,11 @@ class SitemapController extends Controller
                 'sites.language siteLanguate',
             ])
             ->from('{{%elements}} elements')
-            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]] AND [[elements_sites.enabled]] = 1')
+            ->innerJoin('{{%elements_sites}} elements_sites',
+                '[[elements_sites.elementId]] = [[elements.id]] AND [[elements_sites.enabled]] = 1')
             ->innerJoin('{{%sites}} sites', '[[elements_sites.siteId]] = [[sites.id]]')
             ->where(['=', '[[elements_sites.elementId]]', $elementId])
+            ->andWhere(['sites.dateDeleted' => null])
             ->groupBy(['elements_sites.id']);
     }
 
@@ -210,14 +233,17 @@ class SitemapController extends Controller
                 'sitemap_entries.priority priority',
             ])
             ->from(['{{%categories}} categories'])
-            ->innerJoin('{{%homm_sitemap_entries}} sitemap_entries', '[[categories.groupId]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "category"')
-            ->innerJoin('{{%categorygroups_sites}} categorygroups_sites', '[[categorygroups_sites.groupId]] = [[categories.groupId]] AND [[categorygroups_sites.hasUrls]] = 1')
+            ->innerJoin('{{%homm_sitemap_entries}} sitemap_entries',
+                '[[categories.groupId]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "category"')
+            ->innerJoin('{{%categorygroups_sites}} categorygroups_sites',
+                '[[categorygroups_sites.groupId]] = [[categories.groupId]] AND [[categorygroups_sites.hasUrls]] = 1')
             ->innerJoin('{{%elements}} elements', '[[elements.id]] = [[categories.id]] AND [[elements.enabled]] = 1')
-            ->innerJoin('{{%elements_sites}} elements_sites', '[[elements_sites.elementId]] = [[elements.id]] AND [[elements_sites.enabled]] = 1')
+            ->innerJoin('{{%elements_sites}} elements_sites',
+                '[[elements_sites.elementId]] = [[elements.id]] AND [[elements_sites.enabled]] = 1')
             ->innerJoin('{{%sites}} sites', '[[elements_sites.siteId]] = [[sites.id]]')
+            ->andWhere(['elements.dateDeleted' => null])
+            ->andWhere(['sites.dateDeleted' => null])
             ->groupBy(['elements_sites.id']);
     }
 
 }
-
-?>

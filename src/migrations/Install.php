@@ -173,7 +173,7 @@ class Install extends Migration
      */
     protected function removeTables()
     {
-    // sitemap_sitemaprecord table
+        // sitemap_sitemaprecord table
         $this->dropTableIfExists('{{%homm_sitemap_entries}}');
     }
 }
