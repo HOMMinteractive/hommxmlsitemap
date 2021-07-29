@@ -1,18 +1,18 @@
 <?php
 /**
- * sitemap plugin for Craft CMS 3.x
+ * HOMM XML Sitemap plugin for Craft CMS 3.x
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/HOMMinteractive/hommsitemap
+ * @link      https://github.com/HOMMinteractive/hommxmlsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
-namespace homm\hommsitemap\controllers;
+namespace homm\hommxmlsitemap\controllers;
 
-use homm\hommsitemap\models\SitemapEntryModel;
-use homm\hommsitemap\records\SitemapEntry;
-use homm\hommsitemap\Sitemap;
+use homm\hommxmlsitemap\models\SitemapEntryModel;
+use homm\hommxmlsitemap\records\SitemapEntry;
+use homm\hommxmlsitemap\HOMMXMLSitemap;
 
 use Craft;
 use craft\db\Query;
@@ -152,7 +152,7 @@ class SettingsController extends Controller
             }
         }
         $variables = [
-            'settings' => Sitemap::$plugin->getSettings(),
+            'settings' => HOMMXMLSitemap::$plugin->getSettings(),
             'source' => $source,
             'pathPrefix' => ($source == 'CpSettings' ? 'settings/': ''),
             'allStructures' => $allStructures,
@@ -160,7 +160,7 @@ class SettingsController extends Controller
             // 'allRedirects' => $allRedirects
         ];
 
-        return $this->renderTemplate('hommsitemap/settings', $variables);
+        return $this->renderTemplate('hommxmlsitemap/settings', $variables);
     }
 
     /**
@@ -186,7 +186,7 @@ class SettingsController extends Controller
         // filter the enabled sections
         $allSectionIds = [];
 
-        $siteMapService = Sitemap::getInstance()->getSiteMap();
+        $siteMapService = HOMMXMLSitemap::getInstance()->getSiteMap();
 
         if (is_array($sitemapSections)) {
             foreach ($sitemapSections as $key => $entry) {

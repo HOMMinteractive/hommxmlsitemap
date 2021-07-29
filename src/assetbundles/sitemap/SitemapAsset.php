@@ -1,14 +1,14 @@
 <?php
 /**
- * sitemap plugin for Craft CMS 3.x
+ * HOMM XML Sitemap plugin for Craft CMS 3.x
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/HOMMinteractive/hommsitemap
+ * @link      https://github.com/HOMMinteractive/hommxmlsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
-namespace homm\hommsitemap\assetbundles\Sitemap;
+namespace homm\hommxmlsitemap\assetbundles\sitemap;
 
 use Craft;
 use craft\web\AssetBundle;
@@ -43,7 +43,7 @@ class SitemapAsset extends AssetBundle
     public function init()
     {
         // define the path that your publishable resources live
-        $this->sourcePath = "@homm/hommsitemap/assetbundles/sitemap/dist";
+        $this->sourcePath = "@homm/hommxmlsitemap/assetbundles/sitemap/dist";
 
         // define the dependencies
         $this->depends = [

@@ -1,8 +1,8 @@
 {
-    "name": "homm/hommsitemap",
+    "name": "homm/hommxmlsitemap",
     "description": "Craft CMS Plugin to provide and manage XML Sitemap",
     "type": "craft-plugin",
-    "version": "101.0.0",
+    "version": "0.0.1",
     "keywords": [
         "craft",
         "cms",
@@ -37,22 +37,22 @@
     ],
     "autoload": {
         "psr-4": {
-          "homm\\hommsitemap\\": "src/"
+          "homm\\hommxmlsitemap\\": "src/"
         }
     },
     "extra": {
-        "name": "HOMMSitemap",
-        "handle": "hommsitemap",
-        "schemaVersion": "1.0.2",
+        "name": "HOMM XML Sitemap",
+        "handle": "hommxmlsitemap",
+        "schemaVersion": "0.0.1",
         "developer": "HOMM interactive",
         "developerUrl": "https://github.com/HOMMinteractive",
-        "documentationUrl": "https://github.com/HOMMinteractive/hommsitemap/blob/master/README.md",
-        "changelogUrl": "https://raw.githubusercontent.com/HOMMinteractive/hommsitemap/master/CHANGELOG.md",
+        "documentationUrl": "https://github.com/HOMMinteractive/hommxmlsitemap/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/HOMMinteractive/hommxmlsitemap/master/CHANGELOG.md",
         "hasCpSettings": true,
         "hasCpSection": false,
         "components": {
-            "sitemapService": "homm\\hommsitemap\\services\\SitemapService"
+            "sitemapService": "homm\\hommxmlsitemap\\services\\SitemapService"
         },
-        "class": "homm\\hommsitemap\\Sitemap"
+        "class": "homm\\hommxmlsitemap\\HOMMXMLSitemap"
     }
 }

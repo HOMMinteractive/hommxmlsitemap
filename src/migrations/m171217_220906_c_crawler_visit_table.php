@@ -1,6 +1,6 @@
 <?php
 
-namespace homm\hommsitemap\migrations;
+namespace homm\hommxmlsitemap\migrations;
 
 use Craft;
 use craft\db\Migration;

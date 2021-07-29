@@ -1,4 +1,4 @@
-# HOMMSitemap plugin for Craft CMS 3.x
+# HOMM XML Sitemap plugin for Craft CMS 3.x
 
 Craft 3 plugin that provides an easy way to enable and manage a XML sitemap for search engines like Google and Bing
 
@@ -18,7 +18,7 @@ The sitemap is compatible with the [sitemaps.org](https://www.sitemaps.org/proto
 In version 1.0.9 we added support for alternate languages to
 give [Google a better chance to point to the correct page](https://support.google.com/webmasters/answer/2620865?hl=en).
 
-```
+```xml
   <url>
     <loc>https://othersite.local/news/news-item-1</loc>
     <priority>0.5</priority>
@@ -45,7 +45,7 @@ To install the plugin, follow these instructions.
 
 2. Then tell Composer to load the plugin:
 
-        composer require homm/hommsitemap
+        composer require homm/hommxmlsitemap
 
 3. In the Control Panel, go to Settings → Plugins and click the “Install” button for XML sitemap.
 

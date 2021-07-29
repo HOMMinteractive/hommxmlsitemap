@@ -1,12 +1,12 @@
 {#
 /**
- * sitemap plugin for Craft CMS 3.x
+ * HOMM XML Sitemap plugin for Craft CMS 3.x
  *
  * sitemap index.twig
  *
  * @author    Johan Zandstra
  * @copyright Copyright (c) 2017 Johan Zandstra
- * @link      https://github.com/HOMMinteractive/hommsitemap
+ * @link      https://github.com/HOMMinteractive/hommxmlsitemap
  * @package   Sitemap
  * @since     1.0.0
  */
@@ -19,23 +19,23 @@
 
 {% set fullPageForm = true %}
 
-{% do view.registerAssetBundle("homm\\hommsitemap\\assetbundles\\sitemap\\SitemapAsset") %}
-{% do view.registerAssetBundle("homm\\hommsitemap\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
+{% do view.registerAssetBundle("homm\\hommxmlsitemap\\assetbundles\\sitemap\\SitemapAsset") %}
+{% do view.registerAssetBundle("homm\\hommxmlsitemap\\assetbundles\\indexcpsection\\IndexCPSectionAsset") %}
 
 
 {# The title of this CP section #}
 {% set title = "Sitemap settings" %}
 
 {# The URL to this plugin's base CP section #}
-{% set pluginCpUrl = url('hommsitemap') %}
+{% set pluginCpUrl = url('hommxmlsitemap') %}
 
 {# Get a URL to an image in our AssetBundle #}
-{% set iconUrl = view.getAssetManager().getPublishedUrl('@homm/hommsitemap/assetbundles/indexcpsection/dist', true) ~ '/img/Index-icon.svg' %}
+{% set iconUrl = view.getAssetManager().getPublishedUrl('@homm/hommxmlsitemap/assetbundles/indexcpsection/dist', true) ~ '/img/Index-icon.svg' %}
 
 
 {# The content of the CP Section#}
 {% block content %}
-    <input type="hidden" name="action" value="hommsitemap/settings/save-sitemap">
+    <input type="hidden" name="action" value="hommxmlsitemap/settings/save-sitemap">
 
     {{ redirectInput('settings/sitemap') }}
 

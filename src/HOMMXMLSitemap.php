@@ -1,22 +1,22 @@
 <?php
 /**
- * HOMMSitemap plugin for Craft CMS 3.x
+ * HOMM XML Sitemap plugin for Craft CMS 3.x
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/HOMMinteractive/hommsitemap
+ * @link      https://github.com/HOMMinteractive/hommxmlsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
-namespace homm\hommsitemap;
+namespace homm\hommxmlsitemap;
 
 use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\services\ProjectConfig;
 use craft\web\UrlManager;
-use homm\hommsitemap\models\Settings;
-use homm\hommsitemap\services\SitemapService;
+use homm\hommxmlsitemap\models\Settings;
+use homm\hommxmlsitemap\services\SitemapService;
 use yii\base\Event;
 
 /**
@@ -38,16 +38,16 @@ use yii\base\Event;
  * @property  Settings       $settings
  * @method    Settings getSettings()
  */
-class Sitemap extends Plugin
+class HOMMXMLSitemap extends Plugin
 {
     // Static Properties
     // =========================================================================
 
     /**
      * Static property that is an instance of this plugin class so that it can be accessed via
-     * Sitemap::$plugin
+     * HOMMXMLSitemap::$plugin
      *
-     * @var Sitemap
+     * @var HOMMXMLSitemap
      */
     public static $plugin;
 
@@ -58,7 +58,7 @@ class Sitemap extends Plugin
     public $hasCpSettings = true;
 
     // table schema version
-    public $schemaVersion = '1.0.2';
+    public $schemaVersion = '0.0.1';
 
     /**
      * Return the settings response (if some one clicks on the settings/plugin icon)
@@ -89,11 +89,11 @@ class Sitemap extends Plugin
 
             // register routes for the settings tab
             'settings/sitemap'              => [
-                'route'  => 'hommsitemap/settings',
+                'route'  => 'hommxmlsitemap/settings',
                 'params' => ['source' => 'CpSettings']
             ],
             'settings/sitemap/save-sitemap' => [
-                'route'  => 'hommsitemap/settings/save-sitemap',
+                'route'  => 'hommxmlsitemap/settings/save-sitemap',
                 'params' => ['source' => 'CpSettings']
             ],
         ];
@@ -134,7 +134,7 @@ class Sitemap extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function(RegisterUrlRulesEvent $event) {
-                $event->rules['sitemap.xml'] = 'hommsitemap/sitemap/index';
+                $event->rules['sitemap.xml'] = 'hommxmlsitemap/sitemap/index';
             }
         );
 
@@ -152,7 +152,7 @@ class Sitemap extends Plugin
 
         Craft::info(
             Craft::t(
-                'hommsitemap',
+                'hommxmlsitemap',
                 '{name} plugin loaded',
                 ['name' => $this->name]
             ),
@@ -184,7 +184,7 @@ class Sitemap extends Plugin
     protected function settingsHtml(): string
     {
         return Craft::$app->view->renderTemplate(
-            'hommsitemap/settings',
+            'hommxmlsitemap/settings',
             [
                 'settings' => $this->getSettings()
             ]
@@ -194,7 +194,7 @@ class Sitemap extends Plugin
     /**
      * Returns the Service to handle project config
      *
-     * @return \homm\hommsitemap\services\SitemapService
+     * @return \homm\hommxmlsitemap\services\SitemapService
      */
     public function getSiteMap():SitemapService
     {

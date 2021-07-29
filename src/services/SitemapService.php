@@ -1,16 +1,16 @@
 <?php
 /**
- * sitemap plugin for Craft CMS 3.x
+ * HOMM XML Sitemap plugin for Craft CMS 3.x
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/HOMMinteractive/hommsitemap
+ * @link      https://github.com/HOMMinteractive/hommxmlsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
-namespace homm\hommsitemap\services;
+namespace homm\hommxmlsitemap\services;
 
-use homm\hommsitemap\Sitemap;
+use homm\hommxmlsitemap\HOMMXMLSitemap;
 
 use Craft;
 use craft\base\Component;
@@ -19,7 +19,7 @@ use craft\events\ConfigEvent;
 use craft\events\RebuildConfigEvent;
 use craft\helpers\Db;
 use craft\helpers\StringHelper;
-use homm\hommsitemap\records\SitemapEntry;
+use homm\hommxmlsitemap\records\SitemapEntry;
 
 /**
  * SitemapService Service
@@ -47,7 +47,7 @@ class SitemapService extends Component
     /**
      * Save a new entry to the project config
      *
-     * @param \homm\hommsitemap\records\SitemapEntry $record
+     * @param \homm\hommxmlsitemap\records\SitemapEntry $record
      *
      * @throws \yii\base\ErrorException
      * @throws \yii\base\Exception
@@ -98,7 +98,7 @@ class SitemapService extends Component
     /**
      * Delete an entry from project config
      *
-     * @param \homm\hommsitemap\records\SitemapEntry $record
+     * @param \homm\hommxmlsitemap\records\SitemapEntry $record
      */
     public function deleteEntry(SitemapEntry $record)
     {

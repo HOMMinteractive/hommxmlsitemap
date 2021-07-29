@@ -1,21 +1,21 @@
 <?php
 /**
- * sitemap plugin for Craft CMS 3.x
+ * HOMM XML Sitemap plugin for Craft CMS 3.x
  *
  * Craft 3 plugin that provides an easy way to enable and manage a xml sitemap for search engines like Google
  *
- * @link      https://github.com/HOMMinteractive/hommsitemap
+ * @link      https://github.com/HOMMinteractive/hommxmlsitemap
  * @copyright Copyright (c) 2017 Johan Zandstra
  */
 
-namespace homm\hommsitemap\controllers;
+namespace homm\hommxmlsitemap\controllers;
 
 use Craft;
 use craft\db\Query;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use homm\hommsitemap\models\SitemapEntryModel;
-use homm\hommsitemap\records\SitemapCrawlerVisit;
+use homm\hommxmlsitemap\models\SitemapEntryModel;
+use homm\hommxmlsitemap\records\SitemapCrawlerVisit;
 use DOMDocument;
 use Exception;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
@@ -96,10 +96,14 @@ class SitemapController extends Controller
                 continue;
             }
 
-            // NOTE: "seoIndexierung" is just for backwards compatibility
-            $attributes = $entries->getAttributes(['seoIndexierung', 'seoIndexing']);
+            $attributes = $entries->getAttributes();
 
-            if (!$attributes['seoIndexierung'] && !$attributes['seoIndexing']) {
+            // NOTE: "seoIndexierung" is just for backwards compatibility
+            if (isset($attributes['seoIndexierung']) && !$attributes['seoIndexierung']) {
+                continue;
+            }
+
+            if (isset($attributes['seoIndexing']) && !$attributes['seoIndexing']) {
                 continue;
             }
 
