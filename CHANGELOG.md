@@ -1,6 +1,10 @@
 # HOMM XML Sitemap Changelog
 
-## 0.0.1- 2021-07-29
+## 0.0.2 - 2021-08-06
+
+- Added craft commerce support
+
+## 0.0.1 - 2021-07-29
 
 - Forked and renamed Project
 - Added logos

@@ -2,7 +2,7 @@
     "name": "homm/hommxmlsitemap",
     "description": "Craft CMS Plugin to provide and manage XML Sitemap",
     "type": "craft-plugin",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "keywords": [
         "craft",
         "cms",
@@ -27,14 +27,9 @@
     ],
     "require": {
         "craftcms/cms": "^3.2.0",
-        "jaybizzle/crawler-detect": "1.*"
+        "jaybizzle/crawler-detect": "1.*",
+        "ext-json": "*"
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
-    ],
     "autoload": {
         "psr-4": {
           "homm\\hommxmlsitemap\\": "src/"

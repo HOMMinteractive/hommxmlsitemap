@@ -10,7 +10,6 @@
 
 namespace homm\hommxmlsitemap\controllers;
 
-use homm\hommxmlsitemap\models\SitemapEntryModel;
 use homm\hommxmlsitemap\records\SitemapEntry;
 use homm\hommxmlsitemap\HOMMXMLSitemap;
 
@@ -54,18 +53,19 @@ class SettingsController extends Controller
     private function _createEntrySectionQuery(): Query
     {
         return (new Query())
-        ->select([
-            'sections.id',
-            'sections.structureId',
-            'sections.name',
-            'sections.handle',
-            'sections.type',
-            'count(DISTINCT entries.id) entryCount',
-            'count(DISTINCT elements.id) elementCount',
-            'sitemap_entries.id sitemapEntryId',
-            'sitemap_entries.changefreq changefreq',
-            'sitemap_entries.priority priority',
-        ])->from(['{{%sections}} sections'])
+            ->select([
+                'sections.id',
+                'sections.structureId',
+                'sections.name',
+                'sections.handle',
+                'sections.type',
+                'count(DISTINCT entries.id) entryCount',
+                'count(DISTINCT elements.id) elementCount',
+                'sitemap_entries.id sitemapEntryId',
+                'sitemap_entries.changefreq changefreq',
+                'sitemap_entries.priority priority',
+            ])
+            ->from(['{{%sections}} sections'])
             ->leftJoin('{{%structures}} structures', '[[structures.id]] = [[sections.structureId]]')
             ->innerJoin('{{%sections_sites}} sections_sites', '[[sections_sites.sectionId]] = [[sections.id]] AND [[sections_sites.hasUrls]] = 1')
             ->leftJoin('{{%entries}} entries', '[[sections.id]] = [[entries.sectionId]]')
@@ -74,7 +74,7 @@ class SettingsController extends Controller
 
             ->groupBy(['sections.id'])
             ->where(['sections.dateDeleted' => null])
-        ->orderBy(['type' => SORT_ASC],['name' => SORT_ASC]);
+            ->orderBy(['type' => SORT_ASC],['name' => SORT_ASC]);
     }
 
     private function _createCategoryQuery(): Query
@@ -99,15 +99,33 @@ class SettingsController extends Controller
             ->orderBy(['name' => SORT_ASC]);
     }
 
-// Public Methods
-// =========================================================================
+    private function _createProductTypeQuery(): Query
+    {
+        return (new Query())
+            ->select([
+                'productTypes.id',
+                'productTypes.name',
+                'count(DISTINCT products.id) elementCount',
+                'sitemap_entries.id sitemapEntryId',
+                'sitemap_entries.changefreq changefreq',
+                'sitemap_entries.priority priority',
+            ])
+            ->from([\craft\commerce\db\Table::PRODUCTTYPES . ' productTypes'])
+            ->leftJoin(\craft\commerce\db\Table::PRODUCTS . ' products', '[[products.typeId]] = [[productTypes.id]] AND [[products.availableForPurchase]] = 1')
+            ->leftJoin('{{%homm_sitemap_entries}} sitemap_entries', '[[productTypes.id]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "productType"')
+            ->groupBy(['productTypes.id'])
+            ->orderBy(['name' => SORT_ASC]);
+    }
 
-/**
-* Handle a request going to our plugin's index action URL,
-* e.g.: actions/sitemap/default
-*
-* @return mixed
-*/
+    // Public Methods
+    // =========================================================================
+
+    /**
+     * Handle a request going to our plugin's index action URL,
+     * e.g.: actions/sitemap/default
+     *
+     * @return mixed
+     */
     public function actionIndex(): craft\web\Response
     {
         $this->requireLogin();
@@ -138,7 +156,6 @@ class SettingsController extends Controller
         $allCategories = $this->_createCategoryQuery()->all();
         $allCategoryStructures = [];
         if (is_array($allCategories)) {
-            // print_r($allSections);
             foreach ($allCategories as $category) {
                 $allCategoryStructures[] = [
                     'id' => $category['id'],
@@ -151,12 +168,33 @@ class SettingsController extends Controller
                 ];
             }
         }
+
+        $allProductTypeStructures = [];
+        $commerce = Craft::$app->plugins->getPlugin('commerce');
+        if ($commerce && $commerce->isInstalled) {
+            $allProductTypes = $this->_createProductTypeQuery()->all();
+            if (is_array($allProductTypes)) {
+                foreach ($allProductTypes as $productType) {
+                    $allProductTypeStructures[] = [
+                        'id' => $productType['id'],
+                        'type' => 'productType',
+                        'heading' => $productType['name'],
+                        'enabled' => ($productType['sitemapEntryId'] > 0 ? true : false),
+                        'elementCount' => $productType['elementCount'],
+                        'changefreq' => ($productType['sitemapEntryId'] > 0 ? $productType['changefreq'] : 'weekly'),
+                        'priority' => ($productType['sitemapEntryId'] > 0 ? $productType['priority'] : 0.5),
+                    ];
+                }
+            }
+        }
+
         $variables = [
             'settings' => HOMMXMLSitemap::$plugin->getSettings(),
             'source' => $source,
             'pathPrefix' => ($source == 'CpSettings' ? 'settings/': ''),
             'allStructures' => $allStructures,
-            'allCategories' => $allCategoryStructures
+            'allCategories' => $allCategoryStructures,
+            'allProductTypes' => $allProductTypeStructures,
             // 'allRedirects' => $allRedirects
         ];
 
@@ -258,6 +296,44 @@ class SettingsController extends Controller
             }
         } else {
             foreach (SitemapEntry::find()->where(['type' => 'category'])->andWhere(['NOT IN','linkId',$allCategoryIds])->all() as $entry) {
+                $siteMapService->deleteEntry($entry);
+            }
+        }
+
+        // now save the sitemapProductTypes
+        $sitemapProductTypes = $request->getBodyParam('sitemapProductTypes');
+        // filter the enabled sections
+        $allProductTypeIds = [];
+        if (is_array($sitemapProductTypes)) {
+            foreach ($sitemapProductTypes as $key => $entry) {
+                if ($entry['enabled']) {
+                    // filter section id from key
+                    $id = (int)str_replace('id:', '', $key);
+                    if ($id > 0) {
+                        // find the entry, else add one
+                        $sitemapEntry = SitemapEntry::find()->where(['linkId' => $id, 'type' => 'productType'])->one();
+                        if (!$sitemapEntry) {
+                            // insert / update this section
+                            $sitemapEntry = new SitemapEntry();
+                        }
+                        $sitemapEntry->linkId = $id;
+                        $sitemapEntry->type = 'productType';
+                        $sitemapEntry->priority = $entry['priority'];
+                        $sitemapEntry->changefreq = $entry['changefreq'];
+                        $siteMapService->saveEntry($sitemapEntry);
+                        $allProductTypeIds[] = $id;
+                    }
+                }
+            }
+        }
+        // remove all sitemaps not in the id list
+        if(count($allProductTypeIds) == 0) {
+            $entries = SitemapEntry::findAll(['type' => 'productType']);
+            foreach ($entries as $entry){
+                $siteMapService->deleteEntry($entry);
+            }
+        } else {
+            foreach (SitemapEntry::find()->where(['type' => 'productType'])->andWhere(['NOT IN','linkId',$allProductTypeIds])->all() as $entry) {
                 $siteMapService->deleteEntry($entry);
             }
         }

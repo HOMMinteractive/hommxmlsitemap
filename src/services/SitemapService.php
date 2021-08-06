@@ -10,8 +10,6 @@
 
 namespace homm\hommxmlsitemap\services;
 
-use homm\hommxmlsitemap\HOMMXMLSitemap;
-
 use Craft;
 use craft\base\Component;
 use craft\db\Table;
@@ -49,11 +47,11 @@ class SitemapService extends Component
      *
      * @param \homm\hommxmlsitemap\records\SitemapEntry $record
      *
-     * @throws \yii\base\ErrorException
+     * @return bool
      * @throws \yii\base\Exception
      * @throws \yii\base\NotSupportedException
      * @throws \yii\web\ServerErrorHttpException
-     * @return bool
+     * @throws \yii\base\ErrorException
      */
     public function saveEntry(SitemapEntry $record): bool
     {
@@ -72,16 +70,11 @@ class SitemapService extends Component
         }
         $path = self::PROJECT_CONFIG_KEY . ".{$record->uid}";
 
-        $uidById = $record->type === 'section' ? Db::uidById(Table::SECTIONS, $record->linkId) : Db::uidById(
-            Table::CATEGORYGROUPS,
-            $record->linkId
-        );
-
         // set it in the config
         Craft::$app->getProjectConfig()->set(
             $path,
             [
-                'linkId'     => $uidById,
+                'linkId'     => $this->getUidById($record->type, $record->linkId),
                 'type'       => $record->type,
                 'priority'   => $record->priority,
                 'changefreq' => $record->changefreq,
@@ -125,13 +118,8 @@ class SitemapService extends Component
         }
 
         if (!empty($event->newValue['linkId'])) {
-            $idByUid = $event->newValue['type'] === 'section' ? Db::idByUid(
-                Table::SECTIONS,
-                $event->newValue['linkId']
-            ) : Db::idByUid(Table::CATEGORYGROUPS, $event->newValue['linkId']);
-
             $record->uid = $uid;
-            $record->linkId = $idByUid;
+            $record->linkId = $this->getIdByUid($event->newValue['type'], $event->newValue['linkId']);
             $record->type = $event->newValue['type'];
             $record->priority = $event->newValue['priority'];
             $record->changefreq = $event->newValue['changefreq'];
@@ -172,7 +160,7 @@ class SitemapService extends Component
         $e->config[self::PROJECT_CONFIG_KEY] = [];
         foreach ($records as $record) {
             $e->config[self::PROJECT_CONFIG_KEY][$record->uid] = [
-                'linkId' => $this->getUidById($record),
+                'linkId' => $this->getUidById($record->type, $record->linkId),
                 'type' => $record->type,
                 'priority' => $record->priority,
                 'changefreq' => $record->changefreq,
@@ -180,13 +168,55 @@ class SitemapService extends Component
         }
     }
 
-    public function getUidById(SitemapEntry $record)
+    /**
+     * Get the UID by the record ID
+     *
+     * @param string $type
+     * @param int $linkId
+     * @return string|null
+     * @throws \Exception
+     */
+    public function getUidById(string $type, int $linkId)
     {
-        $uid = $record->type === 'section' ? Db::uidById(
-            Table::SECTIONS,
-            $record->linkId
-        ) : Db::uidById(Table::CATEGORIES, $record->linkId);
+        switch ($type) {
+            case 'section':
+                return Db::uidById(Table::SECTIONS, $linkId);
+            case 'category':
+                return Db::uidById(Table::CATEGORYGROUPS, $linkId);
+            case 'productType':
+                $commerce = Craft::$app->plugins->getPlugin('commerce');
+                if ($commerce && $commerce->isInstalled) {
+                    return Db::uidById(\craft\commerce\db\Table::PRODUCTTYPES, $linkId);
+                }
+                throw new \Exception('The product type is only supported if craft commerce is installed.');
+            default:
+                throw new \Exception('Sitemap record type is unknown.');
+        }
+    }
 
-        return $uid;
+    /**
+     * Get the ID by the record UID
+     *
+     * @param string $type
+     * @param string $uid
+     * @return string|null
+     * @throws \Exception
+     */
+    public function getIdByUid(string $type, string $uid)
+    {
+        switch ($type) {
+            case 'section':
+                return Db::idByUid(Table::SECTIONS, $uid);
+            case 'category':
+                return Db::idByUid(Table::CATEGORYGROUPS, $uid);
+            case 'productType':
+                $commerce = Craft::$app->plugins->getPlugin('commerce');
+                if ($commerce && $commerce->isInstalled) {
+                    return Db::idByUid(\craft\commerce\db\Table::PRODUCTTYPES, $uid);
+                }
+                throw new \Exception('The product type is only supported if craft commerce is installed.');
+            default:
+                throw new \Exception('Sitemap record type is unknown.');
+        }
     }
 }

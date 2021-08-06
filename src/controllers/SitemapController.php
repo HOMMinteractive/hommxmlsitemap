@@ -12,9 +12,9 @@ namespace homm\hommxmlsitemap\controllers;
 
 use Craft;
 use craft\db\Query;
+use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\web\Controller;
-use homm\hommxmlsitemap\models\SitemapEntryModel;
 use homm\hommxmlsitemap\records\SitemapCrawlerVisit;
 use DOMDocument;
 use Exception;
@@ -44,7 +44,6 @@ use yii\web\Response;
 class SitemapController extends Controller
 {
     protected $allowAnonymous = ['index'];
-    private $_sourceRouteParams = [];
 
     // Public Methods
     // =========================================================================
@@ -88,7 +87,7 @@ class SitemapController extends Controller
         $dom->appendChild($urlset);
 
         foreach ($this->_createEntrySectionQuery()->all() as $item) {
-            $entries = \craft\elements\Entry::find()
+            $entries = Entry::find()
                 ->id($item['elementId'])
                 ->one();
 
@@ -152,6 +151,23 @@ class SitemapController extends Controller
             $dateUpdated = strtotime($item['dateUpdated']);
             $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
         }
+
+        $commerce = Craft::$app->plugins->getPlugin('commerce');
+        if ($commerce && $commerce->isInstalled) {
+            foreach ($this->_createEntryProductQuery()->all() as $item) {
+                $loc = $this->getUrl($item['uri'], $item['siteId']);
+                if ($loc === null) {
+                    continue;
+                }
+
+                $url = $dom->createElement('url');
+                $urlset->appendChild($url);
+                $url->appendChild($dom->createElement('loc', $loc));
+                $dateUpdated = $item['dateUpdated']->getTimestamp();
+                $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
+            }
+        }
+
         return $dom->saveXML();
     }
 
@@ -250,4 +266,8 @@ class SitemapController extends Controller
             ->groupBy(['elements_sites.id']);
     }
 
+    private function _createEntryProductQuery(): Query
+    {
+        return \craft\commerce\elements\Product::find();
+    }
 }
