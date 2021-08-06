@@ -164,8 +164,9 @@ class SitemapController extends Controller
                 $url = $dom->createElement('url');
                 $urlset->appendChild($url);
                 $url->appendChild($dom->createElement('loc', $loc));
-                $url->appendChild($dom->createElement('priority', $item['priority']));
-                $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
+                // TODO: fix the Unkown Property Exception and query the product correctly
+                $url->appendChild($dom->createElement('priority', $item['priority'] ?? 0.5));
+                $url->appendChild($dom->createElement('changefreq', $item['changefreq'] ?? 'weekly'));
                 $dateUpdated = $item['dateUpdated']->getTimestamp();
                 $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
             }
@@ -248,7 +249,6 @@ class SitemapController extends Controller
     {
         return (new Query())
             ->select([
-
                 'elements_sites.uri uri',
                 'elements_sites.dateUpdated dateUpdated',
                 'elements_sites.siteId',

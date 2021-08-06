@@ -1,5 +1,9 @@
 # HOMM XML Sitemap Changelog
 
+## 0.0.4 - 2021-08-06
+
+- Fixed commerce producttype frequency and priority
+
 ## 0.0.3 - 2021-08-06
 
 - Fixed commerce product query
