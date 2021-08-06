@@ -288,13 +288,13 @@ Please note that the priority you assign to a page is not likely to influence th
                     type: 'select',
                     info: "The value \"always\" should be used to describe documents that change each time they are accessed. The value \"never\" should be used to describe archived URLs.",
                     options: [
-                        {label: 'always', value: 'always', disabled: true},
-                        {label: 'hourly', value: 'hourly', disabled: true},
-                        {label: 'daily', value: 'daily', disabled: true},
-                        {label: 'weekly', value: 'weekly', disabled: true},
-                        {label: 'monthly', value: 'monthly', disabled: true},
-                        {label: 'yearly', value: 'yearly', disabled: true},
-                        {label: 'never', value: 'never', disabled: true}
+                        {label: 'always', value: 'always'},
+                        {label: 'hourly', value: 'hourly'},
+                        {label: 'daily', value: 'daily'},
+                        {label: 'weekly', value: 'weekly'},
+                        {label: 'monthly', value: 'monthly'},
+                        {label: 'yearly', value: 'yearly'},
+                        {label: 'never', value: 'never'}
                     ],
                     small: true
                 },
@@ -305,16 +305,16 @@ Please note that the priority you assign to a page is not likely to influence th
     The default priority of a page is 0.5.<br>
     Please note that the priority you assign to a page is not likely to influence the position of your URLs in a search engine's result pages. Search engines may use this information when selecting between URLs on the same site."|t('app'),
                     options: [
-                        {label: '0.1', value: 0.1, disabled: true},
-                        {label: '0.2', value: 0.2, disabled: true},
-                        {label: '0.3', value: 0.3, disabled: true},
-                        {label: '0.4', value: 0.4, disabled: true},
-                        {label: '0.5', value: 0.5, disabled: true},
-                        {label: '0.6', value: 0.6, disabled: true},
-                        {label: '0.7', value: 0.7, disabled: true},
-                        {label: '0.8', value: 0.8, disabled: true},
-                        {label: '0.9', value: 0.9, disabled: true},
-                        {label: '1.0', value: 1.0, disabled: true}
+                        {label: '0.1', value: 0.1},
+                        {label: '0.2', value: 0.2},
+                        {label: '0.3', value: 0.3},
+                        {label: '0.4', value: 0.4},
+                        {label: '0.5', value: 0.5},
+                        {label: '0.6', value: 0.6},
+                        {label: '0.7', value: 0.7},
+                        {label: '0.8', value: 0.8},
+                        {label: '0.9', value: 0.9},
+                        {label: '1.0', value: 1.0}
                     ],
                     small: true
                 },
@@ -337,11 +337,10 @@ Please note that the priority you assign to a page is not likely to influence th
 {% js %}
 
 var $sitemapRows = $('#sitemapSections').children('tbody').children(),
-$lightswitches = $sitemapRows.children('th:nth-child(2)').children('.lightswitch');
+$lightswitchSection = $sitemapRows.children('th:nth-child(2)').children('.lightswitch');
 
 function updateSitemapSections() {
-    console.log('updateSitemapSections');
-    $lightswitches.each(function() {
+    $lightswitchSection.each(function() {
         if ($(this).data('lightswitch').on) {
             $(this).parent().nextAll('td').removeClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '0');
         } else {
@@ -350,17 +349,16 @@ function updateSitemapSections() {
     });
 }
 
-$lightswitches.on('change', updateSitemapSections);
+$lightswitchSection.on('change', updateSitemapSections);
 
 
 
 // categories
 var $sitemapRows = $('#sitemapCategories').children('tbody').children(),
-$lightswitches = $sitemapRows.children('th:nth-child(2)').children('.lightswitch');
+$lightswitchCategories = $sitemapRows.children('th:nth-child(2)').children('.lightswitch');
 
 function updateSitemapCategotries() {
-    console.log('updateSitemapCategotries');
-    $lightswitchesCategories.each(function() {
+    $lightswitchCategories.each(function() {
         if ($(this).data('lightswitch').on) {
             $(this).parent().nextAll('td').removeClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '0');
         } else {
@@ -369,27 +367,28 @@ function updateSitemapCategotries() {
     });
 }
 
-$lightswitchesCategories.on('change', updateSitemapCategotries);
+$lightswitchCategories.on('change', updateSitemapCategotries);
 
 
 
 {% if allProductTypes %}
     // product types
-    var $sitemapRows = $('#sitemapProductTypes').children('tbody').children(),
-    $lightswitches = $sitemapRows.children('th:nth-child(2)').children('.lightswitch');
+    var $sitemapRows = $('#sitemapProductTypes').children('tbody').children();
+    $lightswitchProductTypes = $sitemapRows.children('th:nth-child(2)').children('.lightswitch');
+    
 
     function updateSitemapProductTypes() {
-        console.log('updateSitemapProductTypes');
-        $lightswitchesProductTypes.each(function() {
-            if ($(this).data('lightswitch').on) {
+        $lightswitchProductTypes.each(function() {
+        $(this).parent().nextAll('td').addClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '-1');
+            {#if ($(this).data('lightswitch').on) {
                 $(this).parent().nextAll('td').removeClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '0');
             } else {
                 $(this).parent().nextAll('td').addClass('disabled').find('textarea,div.lightswitch,input').attr('tabindex', '-1');
-            }
+            }#}
         });
     }
 
-    $lightswitchesProductTypes.on('change', updateSitemapProductTypes);
+    $lightswitchProductTypes.on('change', updateSitemapProductTypes);
 {% endif %}
 
 
