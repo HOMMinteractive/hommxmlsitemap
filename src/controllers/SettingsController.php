@@ -16,6 +16,7 @@ use homm\hommxmlsitemap\HOMMXMLSitemap;
 use Craft;
 use craft\db\Query;
 use craft\web\Controller;
+use craft\commerce\db\Table as CommerceTable;
 
 /**
  * Default Controller
@@ -110,8 +111,8 @@ class SettingsController extends Controller
                 'sitemap_entries.changefreq changefreq',
                 'sitemap_entries.priority priority',
             ])
-            ->from([\craft\commerce\db\Table::PRODUCTTYPES . ' productTypes'])
-            ->leftJoin(\craft\commerce\db\Table::PRODUCTS . ' products', '[[products.typeId]] = [[productTypes.id]] AND [[products.availableForPurchase]] = 1')
+            ->from([CommerceTable::PRODUCTTYPES . ' productTypes'])
+            ->leftJoin(CommerceTable::PRODUCTS . ' products', '[[products.typeId]] = [[productTypes.id]] AND [[products.availableForPurchase]] = 1')
             ->leftJoin('{{%homm_sitemap_entries}} sitemap_entries', '[[productTypes.id]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "productType"')
             ->groupBy(['productTypes.id'])
             ->orderBy(['name' => SORT_ASC]);

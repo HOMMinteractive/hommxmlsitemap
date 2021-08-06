@@ -20,6 +20,7 @@ use DOMDocument;
 use Exception;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use yii\web\Response;
+use craft\commerce\elements\Product;
 
 /**
  * Default Controller
@@ -163,6 +164,8 @@ class SitemapController extends Controller
                 $url = $dom->createElement('url');
                 $urlset->appendChild($url);
                 $url->appendChild($dom->createElement('loc', $loc));
+                $url->appendChild($dom->createElement('priority', $item['priority']));
+                $url->appendChild($dom->createElement('changefreq', $item['changefreq']));
                 $dateUpdated = $item['dateUpdated']->getTimestamp();
                 $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
             }
@@ -268,6 +271,8 @@ class SitemapController extends Controller
 
     private function _createEntryProductQuery(): Query
     {
-        return \craft\commerce\elements\Product::find();
+        return Product::find()
+            ->innerJoin('{{%homm_sitemap_entries}} sitemap_entries',
+                '[[commerce_products.typeId]] = [[sitemap_entries.linkId]] AND [[sitemap_entries.type]] = "productType"');
     }
 }

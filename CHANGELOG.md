@@ -1,5 +1,10 @@
 # HOMM XML Sitemap Changelog
 
+## 0.0.3 - 2021-08-06
+
+- Fixed commerce product query
+- Changed full PHP qualifiers with imports
+
 ## 0.0.2 - 2021-08-06
 
 - Added craft commerce support

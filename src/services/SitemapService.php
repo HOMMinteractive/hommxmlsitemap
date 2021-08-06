@@ -18,6 +18,7 @@ use craft\events\RebuildConfigEvent;
 use craft\helpers\Db;
 use craft\helpers\StringHelper;
 use homm\hommxmlsitemap\records\SitemapEntry;
+use craft\commerce\db\Table as CommerceTable;
 
 /**
  * SitemapService Service
@@ -186,7 +187,7 @@ class SitemapService extends Component
             case 'productType':
                 $commerce = Craft::$app->plugins->getPlugin('commerce');
                 if ($commerce && $commerce->isInstalled) {
-                    return Db::uidById(\craft\commerce\db\Table::PRODUCTTYPES, $linkId);
+                    return Db::uidById(CommerceTable::PRODUCTTYPES, $linkId);
                 }
                 throw new \Exception('The product type is only supported if craft commerce is installed.');
             default:
@@ -212,7 +213,7 @@ class SitemapService extends Component
             case 'productType':
                 $commerce = Craft::$app->plugins->getPlugin('commerce');
                 if ($commerce && $commerce->isInstalled) {
-                    return Db::idByUid(\craft\commerce\db\Table::PRODUCTTYPES, $uid);
+                    return Db::idByUid(CommerceTable::PRODUCTTYPES, $uid);
                 }
                 throw new \Exception('The product type is only supported if craft commerce is installed.');
             default:
