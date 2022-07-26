@@ -1,5 +1,9 @@
 # HOMM XML Sitemap Changelog
 
+## 1.0.1 - 2022-07-26
+
+- fixed per entry indexing flag
+
 ## 1.0.0 - 2022-07-26
 
 - Craft CMS 4 ready

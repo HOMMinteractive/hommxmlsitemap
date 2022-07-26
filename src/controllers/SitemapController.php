@@ -96,14 +96,12 @@ class SitemapController extends Controller
                 continue;
             }
 
-            $attributes = $entries->getAttributes();
-
             // NOTE: "seoIndexierung" is just for backwards compatibility
-            if (isset($attributes['seoIndexierung']) && !$attributes['seoIndexierung']) {
+            if (isset($entries->seoIndexierung) && !$entries->seoIndexierung) {
                 continue;
             }
 
-            if (isset($attributes['seoIndexing']) && !$attributes['seoIndexing']) {
+            if (isset($entries->seoIndexing) && !$entries->seoIndexing) {
                 continue;
             }
 
