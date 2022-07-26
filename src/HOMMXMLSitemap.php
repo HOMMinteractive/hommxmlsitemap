@@ -54,18 +54,18 @@ class HOMMXMLSitemap extends Plugin
     // Public Methods
     // =========================================================================
 
-    public $hasCpSection = true;
-    public $hasCpSettings = true;
+    public bool $hasCpSection = false;
+    public bool $hasCpSettings = true;
 
     // table schema version
-    public $schemaVersion = '0.0.1';
+    public string $schemaVersion = '0.0.1';
 
     /**
      * Return the settings response (if some one clicks on the settings/plugin icon)
      *
      */
 
-    public function getSettingsResponse()
+    public function getSettingsResponse(): mixed
     {
         $url = \craft\helpers\UrlHelper::cpUrl('settings/sitemap');
 
@@ -118,7 +118,7 @@ class HOMMXMLSitemap extends Plugin
 
         $this->setComponents(
             [
-                'sitemap' => SitemapService::class
+                'sitemapService' => SitemapService::class
             ]
         );
 
@@ -168,7 +168,7 @@ class HOMMXMLSitemap extends Plugin
      *
      * @return \craft\base\Model|null
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?\craft\base\Model
     {
         return new Settings();
     }
@@ -177,11 +177,11 @@ class HOMMXMLSitemap extends Plugin
      * Returns the rendered settings HTML, which will be inserted into the content
      * block on the settings page.
      *
-     * @throws \Twig_Error_Loader
+     * @throws \Twig\Error\LoaderError
      * @throws \yii\base\Exception
      * @return string The rendered settings HTML
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         return Craft::$app->view->renderTemplate(
             'hommxmlsitemap/settings',

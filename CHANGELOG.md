@@ -1,5 +1,9 @@
 # HOMM XML Sitemap Changelog
 
+## 1.0.0 - 2022-07-26
+
+- Craft CMS 4 ready
+
 ## 0.0.5 - 2021-08-06
 
 - Fixed commerce productType settings save action

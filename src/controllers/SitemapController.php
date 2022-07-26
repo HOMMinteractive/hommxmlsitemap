@@ -44,7 +44,7 @@ use craft\commerce\elements\Product;
  */
 class SitemapController extends Controller
 {
-    protected $allowAnonymous = ['index'];
+    protected array|bool|int $allowAnonymous = ['index'];
 
     // Public Methods
     // =========================================================================

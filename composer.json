@@ -2,7 +2,7 @@
     "name": "homm/hommxmlsitemap",
     "description": "Craft CMS Plugin to provide and manage XML Sitemap",
     "type": "craft-plugin",
-    "version": "0.0.5",
+    "version": "1.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -26,9 +26,12 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^3.2.0",
-        "jaybizzle/crawler-detect": "1.*",
-        "ext-dom": "*"
+        "php": "^8.0|^8.1",
+        "craftcms/cms": "^4.0.0",
+        "jaybizzle/crawler-detect": "^v1.2",
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-fileinfo": "*"
     },
     "autoload": {
         "psr-4": {
@@ -38,16 +41,10 @@
     "extra": {
         "name": "HOMM XML Sitemap",
         "handle": "hommxmlsitemap",
-        "schemaVersion": "0.0.1",
         "developer": "HOMM interactive",
         "developerUrl": "https://github.com/HOMMinteractive",
         "documentationUrl": "https://github.com/HOMMinteractive/hommxmlsitemap/blob/master/README.md",
         "changelogUrl": "https://raw.githubusercontent.com/HOMMinteractive/hommxmlsitemap/master/CHANGELOG.md",
-        "hasCpSettings": true,
-        "hasCpSection": false,
-        "components": {
-            "sitemapService": "homm\\hommxmlsitemap\\services\\SitemapService"
-        },
         "class": "homm\\hommxmlsitemap\\HOMMXMLSitemap"
     }
 }
