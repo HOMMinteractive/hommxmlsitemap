@@ -219,7 +219,12 @@ class SitemapController extends Controller
     {
         if ($uri !== null) {
             $path = ($uri === '__home__') ? '' : $uri;
-            return UrlHelper::siteUrl($path, null, null, $siteId);
+            $url = UrlHelper::siteUrl($path, null, null, $siteId);
+            // If the addTrailingSlashesToUrls is set to false, then ensure there is no / at the end.
+            if(!Craft::$app->request->generalConfig->addTrailingSlashesToUrls) {
+                $url = rtrim($url, '/');
+            }
+            return $url;
         }
 
         return null;
