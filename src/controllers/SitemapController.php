@@ -209,6 +209,7 @@ class SitemapController extends Controller
             ->andWhere(['elements.archived' => false])
             ->andWhere(['elements.draftId' => null])
             ->andWhere(['elements.revisionId' => null])
+            ->andWhere(['sites.enabled' => true])
             ->groupBy(['elements_sites.id']);
     }
 
@@ -245,6 +246,7 @@ class SitemapController extends Controller
             ->innerJoin('{{%sites}} sites', '[[elements_sites.siteId]] = [[sites.id]]')
             ->where(['=', '[[elements_sites.elementId]]', $elementId])
             ->andWhere(['sites.dateDeleted' => null])
+            ->andWhere(['sites.enabled' => true])
             ->groupBy(['elements_sites.id']);
     }
 
