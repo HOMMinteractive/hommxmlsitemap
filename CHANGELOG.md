@@ -1,5 +1,9 @@
 # HOMM XML Sitemap Changelog
 
+## 0.0.6 - 2022-11-24
+
+- Honor addTrailingSlashesToUrls also for baseUrl
+
 ## 0.0.5 - 2021-08-06
 
 - Fixed commerce productType settings save action
