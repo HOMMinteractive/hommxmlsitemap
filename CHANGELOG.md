@@ -1,5 +1,9 @@
 # HOMM XML Sitemap Changelog
 
+## 1.0.3 - 2022-12-16
+
+- Ignore disabled sites
+
 ## 1.0.2 - 2022-11-24
 
 - Honor addTrailingSlashesToUrls also for baseUrl
