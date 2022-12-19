@@ -1,4 +1,4 @@
-# HOMM XML Sitemap plugin for Craft CMS 3.x
+# HOMM XML Sitemap plugin for Craft CMS 4.x
 
 Craft 3 plugin that provides an easy way to enable and manage a XML sitemap for search engines like Google and Bing
 
