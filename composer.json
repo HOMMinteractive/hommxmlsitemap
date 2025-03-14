@@ -2,7 +2,7 @@
     "name": "homm/hommxmlsitemap",
     "description": "Craft CMS Plugin to provide and manage XML Sitemap",
     "type": "craft-plugin",
-    "version": "1.0.3",
+    "version": "2.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -27,7 +27,7 @@
     ],
     "require": {
         "php": "^8.0|^8.1",
-        "craftcms/cms": "^4.0.0",
+        "craftcms/cms": "^5.0.0",
         "jaybizzle/crawler-detect": "^v1.2",
         "ext-dom": "*",
         "ext-json": "*",

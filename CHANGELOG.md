@@ -1,5 +1,9 @@
 # HOMM XML Sitemap Changelog
 
+## 2.0.0 - 2025-03-14
+
+- Craft CMS 5.x compatibility
+
 ## 1.0.3 - 2022-12-16
 
 - Ignore disabled sites
