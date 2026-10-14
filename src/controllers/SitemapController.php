@@ -88,20 +88,7 @@ class SitemapController extends Controller
         $dom->appendChild($urlset);
 
         foreach ($this->_createEntrySectionQuery()->all() as $item) {
-            $entries = Entry::find()
-                ->id($item['elementId'])
-                ->one();
-
-            if (!$entries) {
-                continue;
-            }
-
-            // NOTE: "seoIndexierung" is just for backwards compatibility
-            if (isset($entries->seoIndexierung) && !$entries->seoIndexierung) {
-                continue;
-            }
-
-            if (isset($entries->seoIndexing) && !$entries->seoIndexing) {
+            if (!$this->isIndexable($item['elementId'], $item['siteId'])) {
                 continue;
             }
 
@@ -118,18 +105,31 @@ class SitemapController extends Controller
             $dateUpdated = strtotime($item['dateUpdated']);
             $url->appendChild($dom->createElement('lastmod', date('Y-m-d\TH:i:sP', $dateUpdated)));
             if ($item['alternateLinkCount'] > 1) {
-                $alternateLinks = $this->_createAlternateSectionQuery($item['elementId'])->all();
-                if (count($alternateLinks) > 0) {
-                    foreach ($alternateLinks as $alternateItem) {
-                        $alternateLoc = $this->getUrl($alternateItem['uri'], $alternateItem['siteId']);
-                        if ($alternateLoc === null) {
-                            continue;
-                        }
+                // Only language versions that are listed themselves, plus the primary site as x-default fallback
+                $alternates = [];
+                $defaultLoc = null;
+                foreach ($this->_createAlternateSectionQuery($item['elementId'])->all() as $alternateItem) {
+                    $alternateLoc = $this->getUrl($alternateItem['uri'], $alternateItem['siteId']);
+                    if ($alternateLoc === null || !$this->isIndexable($item['elementId'], $alternateItem['siteId'])) {
+                        continue;
+                    }
 
+                    $alternates[] = [strtolower($alternateItem['siteLanguage']), $alternateLoc];
+                    if ($alternateItem['isPrimary']) {
+                        $defaultLoc = $alternateLoc;
+                    }
+                }
+
+                if (count($alternates) > 1) {
+                    if ($defaultLoc !== null) {
+                        $alternates[] = ['x-default', $defaultLoc];
+                    }
+
+                    foreach ($alternates as [$hreflang, $href]) {
                         $alternateLink = $dom->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
                         $alternateLink->setAttribute('rel', 'alternate');
-                        $alternateLink->setAttribute('hreflang', strtolower($alternateItem['siteLanguate']));
-                        $alternateLink->setAttribute('href', $alternateLoc);
+                        $alternateLink->setAttribute('hreflang', $hreflang);
+                        $alternateLink->setAttribute('href', $href);
                         $url->appendChild($alternateLink);
                     }
                 }
@@ -231,6 +231,32 @@ class SitemapController extends Controller
         return null;
     }
 
+    /**
+     * Whether the entry may be indexed on the given site, based on its per-site indexing field.
+     */
+    private function isIndexable($elementId, $siteId): bool
+    {
+        $entry = Entry::find()
+            ->id($elementId)
+            ->siteId($siteId)
+            ->one();
+
+        if (!$entry) {
+            return false;
+        }
+
+        // NOTE: "seoIndexierung" is just for backwards compatibility
+        if (isset($entry->seoIndexierung) && !$entry->seoIndexierung) {
+            return false;
+        }
+
+        if (isset($entry->seoIndexing) && !$entry->seoIndexing) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function _createAlternateSectionQuery($elementId): Query
     {
         return (new Query())
@@ -238,7 +264,8 @@ class SitemapController extends Controller
                 'elements_sites.uri uri',
                 'elements_sites.dateUpdated dateUpdated',
                 'elements_sites.siteId',
-                'sites.language siteLanguate',
+                'sites.language siteLanguage',
+                'sites.primary isPrimary',
             ])
             ->from('{{%elements}} elements')
             ->innerJoin('{{%elements_sites}} elements_sites',

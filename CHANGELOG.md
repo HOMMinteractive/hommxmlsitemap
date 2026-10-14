@@ -1,5 +1,11 @@
 # HOMM XML Sitemap Changelog
 
+## 2.1.0 - 2026-10-14
+
+- Add `x-default` alternate link pointing to the primary site
+- Only list alternate links for language versions that may be indexed
+- Check the indexing field per site instead of the primary site only
+
 ## 2.0.0 - 2025-03-14
 
 - Craft CMS 5.x compatibility
