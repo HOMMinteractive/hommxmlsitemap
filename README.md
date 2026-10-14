@@ -28,8 +28,12 @@ give [Google a better chance to point to the correct page](https://support.googl
     <xhtml:link rel="alternate" hreflang="en" href="https://othersite.local/news/news-item-1"/>
     <xhtml:link rel="alternate" hreflang="nl-nl" href="https://othersite.local/nl/news/news-item-1"/>
     <xhtml:link rel="alternate" hreflang="de-ch" href="https://othersite.local/ch/nachrichten/news-item-1"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://othersite.local/news/news-item-1"/>
   </url>
 ```
+
+The `x-default` link points to the entry on the primary site. Language versions with indexing disabled
+(`seoIndexing` / `seoIndexierung`) are left out of the alternate links.
 
 ## Requirements
 
